@@ -204,6 +204,7 @@ PYBIND11_MODULE(flashlight_lib_text_decoder, m) {
       .value("CTC", CriterionType::CTC)
       .value("S2S", CriterionType::S2S);
 
+  // TODO: Add .customWordFactor to the Python bidings
   py::class_<LexiconDecoderOptions>(m, "LexiconDecoderOptions")
       .def(
           py::init<
@@ -215,7 +216,8 @@ PYBIND11_MODULE(flashlight_lib_text_decoder, m) {
               const double,
               const double,
               const bool,
-              const CriterionType>(),
+              const CriterionType,
+              const double>(),
           "beam_size"_a,
           "beam_size_token"_a,
           "beam_threshold"_a,
@@ -224,7 +226,8 @@ PYBIND11_MODULE(flashlight_lib_text_decoder, m) {
           "unk_score"_a,
           "sil_score"_a,
           "log_add"_a,
-          "criterion_type"_a)
+          "criterion_type"_a,
+          "custom_word_factor"_a)
       .def_readwrite("beam_size", &LexiconDecoderOptions::beamSize)
       .def_readwrite("beam_size_token", &LexiconDecoderOptions::beamSizeToken)
       .def_readwrite("beam_threshold", &LexiconDecoderOptions::beamThreshold)
@@ -234,6 +237,7 @@ PYBIND11_MODULE(flashlight_lib_text_decoder, m) {
       .def_readwrite("sil_score", &LexiconDecoderOptions::silScore)
       .def_readwrite("log_add", &LexiconDecoderOptions::logAdd)
       .def_readwrite("criterion_type", &LexiconDecoderOptions::criterionType)
+      .def_readwrite("custom_word_factor", &LexiconDecoderOptions::customWordFactor)
       .def(py::pickle(
           [](const LexiconDecoderOptions& p) { // __getstate__
             return py::make_tuple(
@@ -245,10 +249,11 @@ PYBIND11_MODULE(flashlight_lib_text_decoder, m) {
                 p.unkScore,
                 p.silScore,
                 p.logAdd,
-                p.criterionType);
+                p.criterionType,
+                p.customWordFactor);
           },
           [](py::tuple t) { // __setstate__
-            if (t.size() != 9) {
+            if (t.size() != 10) {
               throw std::runtime_error(
                   "Cannot run __setstate__ on LexiconDecoderOptions - "
                   "insufficient arguments provided.");
@@ -262,7 +267,8 @@ PYBIND11_MODULE(flashlight_lib_text_decoder, m) {
                 t[5].cast<double>(), // unkScore
                 t[6].cast<double>(), // silScore
                 t[7].cast<bool>(), // logAdd
-                t[8].cast<CriterionType>() // criterionType
+                t[8].cast<CriterionType>(), // criterionType
+                t[9].cast<double>() // customWordFactor
             };
             return opts;
           }));
