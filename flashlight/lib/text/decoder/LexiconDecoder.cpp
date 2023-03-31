@@ -126,6 +126,9 @@ void LexiconDecoder::decodeStep(const float* emissions, int T, int N) {
             lmState = lmStateScorePair.first;
             lmScore = lmStateScorePair.second - lexMaxScore;
           }
+          auto wordScore = opt_.lmWeight;
+          // TODO: if label in customVocabulary -> 
+          //wordScore = opt_.lmWeight * opt_.customWordFactor
           candidatesAdd(
               candidates_,
               candidatesBestScore_,

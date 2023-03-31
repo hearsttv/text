@@ -27,6 +27,8 @@ struct LexiconDecoderOptions {
   double silScore; // Silence insertion score
   bool logAdd; // If or not use logadd when merging hypothesis
   CriterionType criterionType; // CTC or ASG
+  //To support custom vocabulary (subset of lexicon which words are more likely - have more weight)
+  double customWordFactor = 1.5; // words in the custom vocabulary will have: wordScore * customWordFactor
 };
 
 /**
