@@ -167,7 +167,7 @@ TEST(DecoderTest, run) {
       .criterionType = CriterionType::ASG};
 
   LexiconDecoder decoder(
-      decoderOpt, trie, lm, silIdx, blankIdx, unkIdx, transitions, false);
+      decoderOpt, trie, trie, lm, silIdx, blankIdx, unkIdx, transitions, false);
   std::cout << "[Decoder] Decoder constructed." << std::endl;
 
   /* -------- Run --------*/
