@@ -16,6 +16,7 @@
 #include "flashlight/lib/text/decoder/LexiconSeq2SeqDecoder.h"
 #include "flashlight/lib/text/decoder/Utils.h"
 #include "flashlight/lib/text/decoder/lm/ZeroLM.h"
+#include "flashlight/lib/text/dictionary/Dictionary.h"
 
 namespace py = pybind11;
 using namespace fl::lib::text;
@@ -342,7 +343,8 @@ PYBIND11_MODULE(flashlight_lib_text_decoder, m) {
           py::init<
               LexiconDecoderOptions,
               const TriePtr,
-              const TriePtr,
+              const Dictionary,
+              //const TriePtr,
               const LMPtr,
               const int,
               const int,
@@ -351,7 +353,8 @@ PYBIND11_MODULE(flashlight_lib_text_decoder, m) {
               const bool>(),
           "options"_a,
           "trie"_a,
-          "trie_custom_vocab"_a,
+          //"trie_custom_vocab"_a,
+          "dict_custom_vocab"_a,
           "lm"_a,
           "sil_token_idx"_a,
           "blank_token_idx"_a,
