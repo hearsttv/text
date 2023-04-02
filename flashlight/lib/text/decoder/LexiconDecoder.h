@@ -155,7 +155,7 @@ class LexiconDecoder : public Decoder {
   LexiconDecoderOptions opt_;
   // Lexicon trie to restrict beam-search decoder
   TriePtr lexicon_;
-  //Custom vocabulary
+  //Custom vocabulary Trie tree
   //TriePtr lexicon_custom_vocab_;
 
   LMPtr lm_;

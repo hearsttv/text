@@ -204,7 +204,6 @@ PYBIND11_MODULE(flashlight_lib_text_decoder, m) {
       .value("CTC", CriterionType::CTC)
       .value("S2S", CriterionType::S2S);
 
-  // TODO: Add .customWordFactor to the Python bidings
   py::class_<LexiconDecoderOptions>(m, "LexiconDecoderOptions")
       .def(
           py::init<
