@@ -56,7 +56,7 @@ class Dictionary {
  private:
   // Creates a dictionary from an input stream
   void createFromStream(std::istream& stream);
-
+    
   std::unordered_map<std::string, int> entry2idx_;
   std::unordered_map<int, std::string> idx2entry_;
   int defaultIndex_ = -1;
