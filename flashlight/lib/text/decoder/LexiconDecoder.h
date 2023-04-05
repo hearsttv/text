@@ -119,7 +119,6 @@ class LexiconDecoder : public Decoder {
   LexiconDecoder(
       LexiconDecoderOptions opt,
       const TriePtr& lexicon,
-      //const TriePtr& lexicon_custom_vocab,
       const Dictionary& dict_custom_vocab,      
       const LMPtr& lm,
       const int sil,
@@ -129,7 +128,6 @@ class LexiconDecoder : public Decoder {
       const bool isLmToken)
       : opt_(std::move(opt)),
         lexicon_(lexicon),
-        //lexicon_custom_vocab_(lexicon_custom_vocab),
         dict_custom_vocab_(dict_custom_vocab),
         lm_(lm),
         sil_(sil),
@@ -159,9 +157,7 @@ class LexiconDecoder : public Decoder {
   // Lexicon trie to restrict beam-search decoder
   TriePtr lexicon_;
   //Custom vocabulary Trie tree
-  //TriePtr lexicon_custom_vocab_;
-  Dictionary dict_custom_vocab_;    
-    
+  Dictionary dict_custom_vocab_;
 
   LMPtr lm_;
   // Index of silence label

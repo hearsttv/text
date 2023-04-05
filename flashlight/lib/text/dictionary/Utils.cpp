@@ -25,6 +25,20 @@ Dictionary createWordDict(const LexiconMap& lexicon) {
   return dict;
 }
 
+Dictionary createCutomVocabDict(const LexiconMap& custom_vocab) {
+  //TODO: Maybe CUSTOM_VOCAB_WEIGHT_FACTOR/100. should be a float function param?
+  auto const CUSTOM_VOCAB_WEIGHT_FACTOR = 100; //change this value
+
+  Dictionary dict;
+  dict.addEntry(kUnkToken, 100); //default should always be 100 (no changes)
+  for (const auto& it : custom_vocab) {
+    dict.addEntry(it.first, CUSTOM_VOCAB_WEIGHT_FACTOR);
+  }
+  //dict.setDefaultIndex(dict.getIndex(kUnkToken));
+  dict.setDefaultIndex(0);
+  return dict;
+}
+
 LexiconMap loadWords(const std::string& filename, int maxWords) {
   LexiconMap lexicon;
 

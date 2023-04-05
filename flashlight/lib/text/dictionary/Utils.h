@@ -22,6 +22,8 @@ using LexiconMap =
 
 Dictionary createWordDict(const LexiconMap& lexicon);
 
+Dictionary createCutomVocabDict(const LexiconMap& custom_vocab);    
+    
 LexiconMap loadWords(const std::string& filename, int maxWords = -1);
 
 // split word into tokens abc -> {"a", "b", "c"}

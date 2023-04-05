@@ -68,21 +68,23 @@ void LexiconDecoder::decodeStep(const float* emissions, int T, int N) {
 
       /* (1) Try children */
       for (int r = 0; r < std::min(opt_.beamSizeToken, N); ++r) {
+        //for each symbol (token) in the emissions at time t, 
+        //compute the emittingModelScore
         int n = idx[r];
         auto iter = prevLex->children.find(n);
         if (iter == prevLex->children.end()) {
           continue;
         }
         const TrieNodePtr& lex = iter->second;
-        double emittingModelScore = emissions[t * N + n];
+        double emittingModelScore = emissions[t * N + n]; //use the emission[t, n] as score
         if (nDecodedFrames_ + t > 0 &&
             opt_.criterionType == CriterionType::ASG) {
-          emittingModelScore += transitions_[n * N + prevIdx];
+          emittingModelScore += transitions_[n * N + prevIdx]; //not used by CTC
         }
-        double score = prevHyp.score + emittingModelScore;
+        double score = prevHyp.score + emittingModelScore; //combine with previous hypotesis score
         if (n == sil_) {
           score += opt_.silScore;
-        }
+        } 
 
         LMStatePtr lmState;
         double lmScore = 0.;
