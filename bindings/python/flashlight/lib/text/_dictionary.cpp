@@ -53,7 +53,7 @@ PYBIND11_MODULE(flashlight_lib_text_dictionary, m) {
           &Dictionary::mapIndicesToEntries,
           "indices"_a);
   m.def("create_word_dict", &createWordDict, "lexicon"_a);
-  m.def("create_custom_vocab_dict", &createCutomVocabDict, "custom_vocab"_a);
+  m.def("create_custom_vocabulary_dict", &createCutomVocabularyDict, "custom_vocab"_a, "weight_factor"_a);
   m.def("load_words", &loadWords, "filename"_a, "max_words"_a = -1);
   m.def("pack_replabels", &packReplabels, "tokens"_a, "dict"_a, "max_reps"_a);
   m.def(

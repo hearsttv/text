@@ -24,18 +24,14 @@ Dictionary createWordDict(const LexiconMap& lexicon) {
   dict.setDefaultIndex(dict.getIndex(kUnkToken));
   return dict;
 }
-
-Dictionary createCutomVocabDict(const LexiconMap& custom_vocab) {
-  //TODO: Maybe CUSTOM_VOCAB_WEIGHT_FACTOR/100. should be a float function param?
-  auto const CUSTOM_VOCAB_WEIGHT_FACTOR = 100; //change this value
-
+    
+Dictionary createCutomVocabularyDict(const LexiconMap& customVocab, const float weightFactor) {
   Dictionary dict;
-  dict.addEntry(kUnkToken, 100); //default should always be 100 (no changes)
-  for (const auto& it : custom_vocab) {
-    dict.addEntry(it.first, CUSTOM_VOCAB_WEIGHT_FACTOR);
+  for (const auto& it : customVocab) {
+    auto factor = 100*weightFactor;
+    dict.addEntry(it.first, (int)factor);
   }
-  //dict.setDefaultIndex(dict.getIndex(kUnkToken));
-  dict.setDefaultIndex(0);
+  dict.setDefaultIndex(100);
   return dict;
 }
 

@@ -135,6 +135,7 @@ class CMakeBuild(build_ext):
             os.makedirs(self.build_temp)
 
         ext_dir = str(Path(self.get_ext_fullpath(ext.name)).absolute().parent)
+        print('ext_dir:', ext_dir)
         source_dir = str(Path(__file__).absolute().parent)
         use_kenlm = not check_negative_env_flag("USE_KENLM")  # on unless disabled
         kenlm_header_path, kenlm_lib_path = (

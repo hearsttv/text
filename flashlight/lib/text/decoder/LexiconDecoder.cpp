@@ -21,7 +21,7 @@ namespace text {
 
 void LexiconDecoder::decodeBegin() {
   //write_log_file("decodeBegin() started at %s", get_date_string(std::system_clock::now()));
-  write_log_file("decodeBegin()");    
+  write_log_file("decodeBegin()");
     
   hyp_.clear(); // Vector of hypothesis for all the frames so far
   hyp_.emplace(0, std::vector<LexiconDecoderState>());
