@@ -29,7 +29,7 @@ struct TrieNode {
   explicit TrieNode(int idx)
       : children(std::unordered_map<int, std::shared_ptr<TrieNode>>()),
         idx(idx),
-        //depth(0),    
+        depth(0),    
         maxScore(0) {
     labels.reserve(kTrieMaxLabel);
     scores.reserve(kTrieMaxLabel);
@@ -41,10 +41,8 @@ struct TrieNode {
   // Node index
   int idx;
 
-  //TODO:
-  // Deaph of a node. Root node is 0
-  //int depth;
-    
+  // Depth of a node (represents the length of the partial word)
+  int depth;    
     
   // Labels of words that are constructed from the given path. Note that
   // `labels` is nonempty only if the current node represents a completed token.

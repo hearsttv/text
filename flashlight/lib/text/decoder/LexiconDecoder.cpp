@@ -33,7 +33,7 @@ void LexiconDecoder::decodeBegin() {
 }
 
 void LexiconDecoder::decodeStep(const float* emissions, int T, int N) {      
-  write_log_file("# decodeStep(emissions: T=%d, N=%d) - v.6", T, N);
+  write_log_file("# decodeStep(emissions: T=%d, N=%d) - v.8", T, N);
   write_log_file("labels_in_custom_vocab = [", T, N);
                  
   int startFrame = nDecodedFrames_ - nPrunedFrames_;
@@ -46,7 +46,7 @@ void LexiconDecoder::decodeStep(const float* emissions, int T, int N) {
 
   std::vector<size_t> idx(N);
   for (int t = 0; t < T; t++) {
-    //write_log_file("\tt = %d", t);
+    write_log_file("\tt = %d", t);
       
     std::iota(idx.begin(), idx.end(), 0);
     if (N > opt_.beamSizeToken) {
@@ -70,7 +70,7 @@ void LexiconDecoder::decodeStep(const float* emissions, int T, int N) {
       for (int r = 0; r < std::min(opt_.beamSizeToken, N); ++r) {
         //for each symbol (token) in the emissions at time t, 
         //compute the emittingModelScore
-        int n = idx[r];
+        int n = idx[r]; //n = token of the current symbol being analised
         auto iter = prevLex->children.find(n);
         if (iter == prevLex->children.end()) {
           continue;
@@ -130,53 +130,32 @@ void LexiconDecoder::decodeStep(const float* emissions, int T, int N) {
             // tokens consecutively.
             continue;
           }
-
+            
           if (!isLmToken_) {
             auto lmStateScorePair = lm_->score(prevHyp.lmState, label);
             lmState = lmStateScorePair.first;
             lmScore = lmStateScorePair.second - lexMaxScore;
           }
-            
-          // Some how get a word (string) vector with the labels of each index
-          // words_vector[label] -> word
-                 
-            
+                        
           //Improve score of words present in the custom vocabulary
           auto total_score = score + (opt_.lmWeight * lmScore) + opt_.wordScore;
           auto str_label = std::to_string(label);
           if (dict_custom_vocab_.contains(str_label)) {
-              //score_increment is inversely proportional to str_label.length()
+              auto word_len = lex->depth - 1;
+              //score_increment is inversely proportional to word_len
               //Note that 15 was computed based on the largest word in the custom vocabulary, but don't necessarily
               //need to be changed if we add some larger word.
-
-              //TODO:
-              //auto word_len = lex->depth
-              //auto score_increment = std::fabs(total_score * opt_.customWordFactor / (15/word_len));
-              
-              auto score_increment = std::fabs(total_score * opt_.customWordFactor / (15/str_label.length()));
-              if (str_label.length() <= 3) {
-                  score_increment = (int)score_increment * 0.5;
-              }
+              auto score_increment = std::fabs(total_score * opt_.customWordFactor / (15/word_len));
+              //if (word_len <= 3) {
+              //    score_increment = (int)score_increment * 0.5;
+              //}
               total_score += score_increment;
-              //write_log_file("%d,", label);
-              write_log_file("[%d, %d, %d]", label, str_label.length(), score_increment);
               
-              
+              //TODO: receive a list of speciall alert codes (labels) and give extra boost to them (~20%)
+              //TODO: avoid adding repeated words (check if the label of the parent hypoteses is the same)
+              write_log_file("\t\t[%d, %d, %d]", label, word_len, score_increment);
+                            
           }
-          /*
-          auto custom_vocab_score = 0.0;
-          auto str_label = std::to_string(label);
-          if (dict_custom_vocab_.contains(str_label)) {
-              auto factor = dict_custom_vocab_.getIndex(str_label);
-              //note: I can't log the word because we don't pass word_dict to this object in custom_decoder.py
-              //write_log_file("\t\t[time step %d] Custom vocab: idx=%d, factor=%d", t, label, factor);
-              write_log_file("%d,", label);
-              auto float_factor = (float)factor / 100.0;
-              custom_vocab_score = factor * opt_.customWordFactor;
-              total_score += custom_vocab_score
-          }
-          auto total_score = score + (opt_.lmWeight * lmScore) + opt_.wordScore + custom_vocab_score;
-          */
             
           candidatesAdd(
               candidates_,

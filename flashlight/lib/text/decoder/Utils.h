@@ -373,6 +373,7 @@ std::string string_format( const std::string& format, Args ... args )
 //usage example: write_log_file("value = %d", 202412);
 template<typename ... Args>
 void write_log_file(const std::string& msg, Args ... args) {
+  return; //Don't write any log
   std::ofstream logFile;
   logFile.open ("/Users/fabricio/Public/LexiconDecoder_Log.txt", std::ofstream::out | std::ofstream::app);  
   try {
