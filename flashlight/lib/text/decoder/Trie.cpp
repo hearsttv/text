@@ -34,6 +34,8 @@ Trie::insert(const std::vector<int>& indices, int label, float score) {
     }
     if (node->children.find(idx) == node->children.end()) {
       node->children[idx] = std::make_shared<TrieNode>(idx);
+      //TODO:
+      //node->children[idx]->depth = node->depth + 1
     }
     node = node->children[idx];
   }

@@ -189,9 +189,6 @@ class LexiconDecoder : public Decoder {
   // These 2 variables are used for online decoding, for hypothesis pruning
   int nDecodedFrames_; // Total number of decoded frames.
   int nPrunedFrames_; // Total number of pruned frames from hyp_.
-    
- //private:
-  //void write_log_file(const std::string& msg);
 };
 
 } // namespace text

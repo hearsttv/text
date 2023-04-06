@@ -20,8 +20,7 @@ namespace lib {
 namespace text {
 
 void LexiconDecoder::decodeBegin() {
-  //write_log_file("decodeBegin() started at %s", get_date_string(std::system_clock::now()));
-  write_log_file("decodeBegin()");
+  //write_log_file("decodeBegin()");
     
   hyp_.clear(); // Vector of hypothesis for all the frames so far
   hyp_.emplace(0, std::vector<LexiconDecoderState>());
@@ -33,8 +32,9 @@ void LexiconDecoder::decodeBegin() {
   nPrunedFrames_ = 0;
 }
 
-void LexiconDecoder::decodeStep(const float* emissions, int T, int N) {  
-  write_log_file("decodeStep(emissions: T=%d, N=%d)", T, N);
+void LexiconDecoder::decodeStep(const float* emissions, int T, int N) {      
+  write_log_file("# decodeStep(emissions: T=%d, N=%d) - v.6", T, N);
+  write_log_file("labels_in_custom_vocab = [", T, N);
                  
   int startFrame = nDecodedFrames_ - nPrunedFrames_;
   // Extend hyp_ buffer
@@ -46,7 +46,7 @@ void LexiconDecoder::decodeStep(const float* emissions, int T, int N) {
 
   std::vector<size_t> idx(N);
   for (int t = 0; t < T; t++) {
-    write_log_file("\tt = %d", t);
+    //write_log_file("\tt = %d", t);
       
     std::iota(idx.begin(), idx.end(), 0);
     if (N > opt_.beamSizeToken) {
@@ -119,9 +119,6 @@ void LexiconDecoder::decodeStep(const float* emissions, int T, int N) {
           }
         }
 
-        //for logging
-        auto label_idx = 0; 
-
         // If we got a true word
         for (auto label : lex->labels) {
           if (prevLex == lexicon_->getRoot() && prevHyp.token == n) {
@@ -139,26 +136,53 @@ void LexiconDecoder::decodeStep(const float* emissions, int T, int N) {
             lmState = lmStateScorePair.first;
             lmScore = lmStateScorePair.second - lexMaxScore;
           }
-
+            
+          // Some how get a word (string) vector with the labels of each index
+          // words_vector[label] -> word
+                 
+            
           //Improve score of words present in the custom vocabulary
-          // TODO: get the word (string) from the label (int)
-          //auto label_word = "vehicleonfire";
-          //if (dict_custom_vocab_.contains(label_word)) {
-          //  score = score * opt_.customWordFactor;
-          //}
-          //firstalarm 
-          //write_log_file("\t\tcandidate word: idx=%d, score=%f", label, lex->scores[label_idx]);
-  
-          if (label == 62492) {
-              write_log_file("[firstalarm] custom vocabulary word detected!");
-          //  score = score + opt_.customWordFactor;
+          auto total_score = score + (opt_.lmWeight * lmScore) + opt_.wordScore;
+          auto str_label = std::to_string(label);
+          if (dict_custom_vocab_.contains(str_label)) {
+              //score_increment is inversely proportional to str_label.length()
+              //Note that 15 was computed based on the largest word in the custom vocabulary, but don't necessarily
+              //need to be changed if we add some larger word.
+
+              //TODO:
+              //auto word_len = lex->depth
+              //auto score_increment = std::fabs(total_score * opt_.customWordFactor / (15/word_len));
+              
+              auto score_increment = std::fabs(total_score * opt_.customWordFactor / (15/str_label.length()));
+              if (str_label.length() <= 3) {
+                  score_increment = (int)score_increment * 0.5;
+              }
+              total_score += score_increment;
+              //write_log_file("%d,", label);
+              write_log_file("[%d, %d, %d]", label, str_label.length(), score_increment);
+              
+              
           }
-          
+          /*
+          auto custom_vocab_score = 0.0;
+          auto str_label = std::to_string(label);
+          if (dict_custom_vocab_.contains(str_label)) {
+              auto factor = dict_custom_vocab_.getIndex(str_label);
+              //note: I can't log the word because we don't pass word_dict to this object in custom_decoder.py
+              //write_log_file("\t\t[time step %d] Custom vocab: idx=%d, factor=%d", t, label, factor);
+              write_log_file("%d,", label);
+              auto float_factor = (float)factor / 100.0;
+              custom_vocab_score = factor * opt_.customWordFactor;
+              total_score += custom_vocab_score
+          }
+          auto total_score = score + (opt_.lmWeight * lmScore) + opt_.wordScore + custom_vocab_score;
+          */
+            
           candidatesAdd(
               candidates_,
               candidatesBestScore_,
-              opt_.beamThreshold,
-              score + (opt_.lmWeight * lmScore) + opt_.wordScore,
+              opt_.beamThreshold,              
+              total_score, // includes custom_vocab_score in the score math
               lmState,
               lexicon_->getRoot(),
               &prevHyp,
@@ -190,7 +214,6 @@ void LexiconDecoder::decodeStep(const float* emissions, int T, int N) {
               prevHyp.emittingModelScore + emittingModelScore,
               prevHyp.lmScore + lmScore);
         }
-        label_idx++;
       }
 
       /* (2) Try same lexicon node */
@@ -254,10 +277,11 @@ void LexiconDecoder::decodeStep(const float* emissions, int T, int N) {
     updateLMCache(lm_, hyp_[startFrame + t + 1]);      
   }
   nDecodedFrames_ += T;
+  write_log_file("]");
 }
 
 void LexiconDecoder::decodeEnd() {
-  write_log_file("decodeEnd()");
+  //write_log_file("decodeEnd()");
     
   candidatesReset(candidatesBestScore_, candidates_, candidatePtrs_);
   bool hasNiceEnding = false;
