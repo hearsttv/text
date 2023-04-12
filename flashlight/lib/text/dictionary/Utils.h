@@ -12,6 +12,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <memory>
 
 #include "flashlight/lib/text/dictionary/Dictionary.h"
 
