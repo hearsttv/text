@@ -12,6 +12,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <memory>
 
 #include "flashlight/lib/text/dictionary/Dictionary.h"
 
@@ -76,6 +77,10 @@ std::string dict_string_format( const std::string& format, Args ... args )
 template<typename ... Args>
 void dict_write_log_file(const std::string& msg, Args ... args) {
   std::ofstream logFile;
+
+  //Ignore all dict_write_log_file() calls
+  return;
+
   logFile.open ("/Users/fabricio/Public/Dictionary_Log.txt", std::ofstream::out | std::ofstream::app);  
   try {
     logFile << dict_string_format(msg, args...) << "\n";
