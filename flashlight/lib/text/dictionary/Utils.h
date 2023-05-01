@@ -62,35 +62,6 @@ std::vector<int> tkn2Idx(
     const fl::lib::text::Dictionary& tokenDict,
     int maxReps);
 
-//usage example: std::cout << string_format("value = %d", 202412);
-template<typename ... Args>
-std::string dict_string_format( const std::string& format, Args ... args )
-{
-    size_t size = snprintf( nullptr, 0, format.c_str(), args ... ) + 1; // Extra space for '\0'
-    if( size <= 0 ){ throw std::runtime_error( "Error during formatting." ); }
-    std::unique_ptr<char[]> buf( new char[ size ] ); 
-    snprintf( buf.get(), size, format.c_str(), args ... );
-    return std::string( buf.get(), buf.get() + size - 1 ); // We don't want the '\0' inside
-}
-    
-//usage example: write_log_file("value = %d", 202412);
-template<typename ... Args>
-void dict_write_log_file(const std::string& msg, Args ... args) {
-  std::ofstream logFile;
-
-  //Ignore all dict_write_log_file() calls
-  return;
-
-  logFile.open ("/Users/fabricio/Public/Dictionary_Log.txt", std::ofstream::out | std::ofstream::app);  
-  try {
-    logFile << dict_string_format(msg, args...) << "\n";
-  }
-  catch (std::string st) {
-    std::cerr << st;
-  } 
-  logFile.close();        
-}
-
 } // namespace text
 } // namespace lib
 } // namespace fl
