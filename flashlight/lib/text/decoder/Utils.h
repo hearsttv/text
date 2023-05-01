@@ -359,44 +359,6 @@ void updateLMCache(const LMPtr& lm, std::vector<DecoderState>& hypothesis) {
   lm->updateCache(states);  
 }
 
-//usage example: std::cout << string_format("value = %d", 202412);
-template<typename ... Args>
-std::string string_format( const std::string& format, Args ... args )
-{
-    size_t size = snprintf( nullptr, 0, format.c_str(), args ... ) + 1; // Extra space for '\0'
-    if( size <= 0 ){ throw std::runtime_error( "Error during formatting." ); }
-    std::unique_ptr<char[]> buf( new char[ size ] ); 
-    snprintf( buf.get(), size, format.c_str(), args ... );
-    return std::string( buf.get(), buf.get() + size - 1 ); // We don't want the '\0' inside
-}
-    
-//usage example: write_log_file("value = %d", 202412);
-template<typename ... Args>
-void write_log_file(const std::string& msg, Args ... args) {
-  return; //Don't write any log
-  std::ofstream logFile;
-  logFile.open ("/Users/fabricio/Public/LexiconDecoder_Log.txt", std::ofstream::out | std::ofstream::app);  
-  try {
-    logFile << string_format(msg, args...) << "\n";
-  }
-  catch (std::string st) {
-    std::cerr << st;
-  } 
-  logFile.close();        
-}
-
-/*
-//usage example: get_date_string(std::system_clock::now());
-std::string get_date_string(std::chrono::time_point t) {
-  auto as_time_t = std::chrono::system_clock::to_time_t(t);
-  struct tm tm;
-  if (::gmtime_r(&as_time_t, &tm))
-    if (std::strftime(some_buffer, sizeof(some_buffer), "%F", &tm))
-      return std::string{some_buffer};
-  throw std::runtime_error("Failed to get current date as string");
-}
-*/
-
 } // namespace text
 } // namespace lib
 } // namespace fl
