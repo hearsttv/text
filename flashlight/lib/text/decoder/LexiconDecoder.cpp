@@ -20,8 +20,6 @@ namespace lib {
 namespace text {
 
 void LexiconDecoder::decodeBegin() {
-  //write_log_file("decodeBegin()");
-    
   hyp_.clear(); // Vector of hypothesis for all the frames so far
   hyp_.emplace(0, std::vector<LexiconDecoderState>());
 
@@ -33,9 +31,6 @@ void LexiconDecoder::decodeBegin() {
 }
 
 void LexiconDecoder::decodeStep(const float* emissions, int T, int N) {      
-  write_log_file("# decodeStep(emissions: T=%d, N=%d) - v.8", T, N);
-  write_log_file("labels_in_custom_vocab = [", T, N);
-                 
   int startFrame = nDecodedFrames_ - nPrunedFrames_;
   // Extend hyp_ buffer
   if (hyp_.size() < startFrame + T + 2) {
@@ -46,8 +41,6 @@ void LexiconDecoder::decodeStep(const float* emissions, int T, int N) {
 
   std::vector<size_t> idx(N);
   for (int t = 0; t < T; t++) {
-    write_log_file("\tt = %d", t);
-      
     std::iota(idx.begin(), idx.end(), 0);
     if (N > opt_.beamSizeToken) {
       std::partial_sort(
@@ -150,11 +143,6 @@ void LexiconDecoder::decodeStep(const float* emissions, int T, int N) {
               //    score_increment = (int)score_increment * 0.5;
               //}
               total_score += score_increment;
-              
-              //TODO: receive a list of speciall alert codes (labels) and give extra boost to them (~20%)
-              //TODO: avoid adding repeated words (check if the label of the parent hypoteses is the same)
-              write_log_file("\t\t[%d, %d, %d]", label, word_len, score_increment);
-                            
           }
             
           candidatesAdd(
@@ -256,12 +244,9 @@ void LexiconDecoder::decodeStep(const float* emissions, int T, int N) {
     updateLMCache(lm_, hyp_[startFrame + t + 1]);      
   }
   nDecodedFrames_ += T;
-  write_log_file("]");
 }
 
 void LexiconDecoder::decodeEnd() {
-  //write_log_file("decodeEnd()");
-    
   candidatesReset(candidatesBestScore_, candidates_, candidatePtrs_);
   bool hasNiceEnding = false;
   for (const LexiconDecoderState& prevHyp :
